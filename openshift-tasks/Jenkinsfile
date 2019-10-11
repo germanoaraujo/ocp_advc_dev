@@ -98,8 +98,8 @@ podTemplate(
 
       // Blue/Green Deployment into Production
       // -------------------------------------
-      #def destApp   = "tasks-green"
-      #def activeApp = ""
+      //def destApp   = "tasks-green"
+      //def activeApp = ""
 
       stage('Blue/Green Production Deployment') {
         // TBD: Determine which application is active
