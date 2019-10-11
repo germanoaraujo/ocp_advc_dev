@@ -41,15 +41,17 @@ podTemplate(
         sh "${mvnCmd} clean package -DskipTests=true"
       }
 
-      // Using Maven run the unit tests
-      stage('Unit Tests') {
-        echo "Running Unit Tests"
-        sh "${mvnCmd} test"
-      }
-
-      stage('Code Analysis') {
-        echo "Running Code Analysis"
-        sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube.gpte-hw-cicd.svc.cluster.local:9000 -DskipTests"
+      stage('Parallel Tasks') {
+        parallel {
+          stage('Unit Tests') {
+            echo "Running Unit Tests"
+            sh "${mvnCmd} test"
+          }
+          stage('Code Analysis') {
+            echo "Running Code Analysis"
+            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube.gpte-hw-cicd.svc.cluster.local:9000 -DskipTests"
+          }
+        }
       }
 
       // Publish the built war file to Nexus
