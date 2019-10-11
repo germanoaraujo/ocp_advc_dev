@@ -15,18 +15,16 @@ podTemplate(
   ]
 ) {
   // Set your project Prefix using your GUID
-  def prefix      = "GUID"
-  def mvnCmd      = "mvn -s ./nexus_openshift_settings.xml"
+  def prefix      = "7115"
+  def mvnCmd      = "mvn -s ../nexus_openshift_settings.xml"
   def devProject  = "${prefix}-tasks-dev"
   def prodProject = "${prefix}-tasks-prod"
   def devTag      = "0.0-0"
   def prodTag     = "0.0"
   def destApp     = "tasks-green"
   def activeApp   = ""
+
   node('skopeo-pod') {
-    // Define Maven Command to point to the correct
-    // settings for our Nexus installation
-    def mvnCmd = "mvn -s ../nexus_settings.xml"
 
     // Checkout Source Code.
     stage('Checkout Source') {
@@ -35,46 +33,42 @@ podTemplate(
 
     // Build the Tasks Service
     dir('openshift-tasks') {
-      // The following variables need to be defined at the top level
-      // and not inside the scope of a stage - otherwise they would not
-      // be accessible from other stages.
-      // Extract version from the pom.xml
       def version = getVersionFromPom("pom.xml")
-
-      // TBD Set the tag for the development image: version + build number
-      def devTag  = ""
-      // Set the tag for the production image: version
-      def prodTag = ""
-
-      // Using Maven build the war file
-      // Do not run tests in this step
+      devTag  = "${version}-" + currentBuild.number
+      prodTag = "${version}"
       stage('Build war') {
-        echo "Building version ${devTag}"
-
-        // TBD: Execute Maven Build
+        steps {
+          echo "Building version ${devTag}"
+          sh "${mvnCmd} clean package -DskipTests=true"
+        }
       }
 
       // TBD: The next two stages should run in parallel
+      parallel {
 
-      // Using Maven run the unit tests
-      stage('Unit Tests') {
-        echo "Running Unit Tests"
+        // Using Maven run the unit tests
+        stage('Unit Tests') {
+          steps {
+            echo "Running Unit Tests"
+            sh "${mvnCmd} test"
+          }
+        }
 
-        // TBD: Execute Unit Tests
-      }
+        // Using Maven to call SonarQube for Code Analysis
+        stage('Code Analysis') {
+          steps {
+            echo "Running Code Analysis"
+            sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube.gpte-hw-cicd.svc.cluster.local:9000 -DskipTests"
+          }
+        }
 
-      // Using Maven to call SonarQube for Code Analysis
-      stage('Code Analysis') {
-        echo "Running Code Analysis"
-
-        // TBD: Execute Sonarqube Tests
       }
 
       // Publish the built war file to Nexus
       stage('Publish to Nexus') {
-        echo "Publish to Nexus"
-
-        // TBD: Publish to Nexus
+        steps {
+          sh "${mvnCmd} deploy -DskipTests=true -P nexus3"
+        }
       }
 
       // Build the OpenShift Image in OpenShift and tag it.
