@@ -16,7 +16,7 @@ podTemplate(
   node('skopeo-pod') {
     // Set your project Prefix using your GUID
     def prefix      = "7115"
-    def mvnCmd      = "mvn -s ../nexus_openshift_settings.xml"
+    def mvnCmd      = "mvn -s nexus_openshift_settings.xml"
     def devProject  = "${prefix}-tasks-dev"
     def prodProject = "${prefix}-tasks-prod"
     def devTag      = "0.0-0"
