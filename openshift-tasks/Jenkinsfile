@@ -13,6 +13,11 @@ podTemplate(
     )
   ]
 ) {
+  def getVersionFromPom(pom) {
+    def matcher = readFile(pom) =~ '<version>(.+)</version>'
+    matcher ? matcher[0][1] : null
+  }
+
   node('skopeo-pod') {
     def prefix      = "7115"
     def mvnCmd      = "mvn -s ../nexus_settings.xml"
@@ -22,11 +27,6 @@ podTemplate(
     def prodTag     = "0.0"
     def destApp     = "tasks-green"
     def activeApp   = ""
-
-    def getVersionFromPom(pom) {
-      def matcher = readFile(pom) =~ '<version>(.+)</version>'
-      matcher ? matcher[0][1] : null
-    }
 
     stage('Checkout Source') {
       checkout scm
