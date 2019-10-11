@@ -14,6 +14,15 @@ podTemplate(
     )
   ]
 ) {
+  // Set your project Prefix using your GUID
+  def prefix      = "GUID"
+  def mvnCmd      = "mvn -s ./nexus_openshift_settings.xml"
+  def devProject  = "${prefix}-tasks-dev"
+  def prodProject = "${prefix}-tasks-prod"
+  def devTag      = "0.0-0"
+  def prodTag     = "0.0"
+  def destApp     = "tasks-green"
+  def activeApp   = ""
   node('skopeo-pod') {
     // Define Maven Command to point to the correct
     // settings for our Nexus installation
