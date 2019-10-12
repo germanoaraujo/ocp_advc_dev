@@ -18,46 +18,12 @@ echo "$TASKS_DEV_PROJECT_NAME"
 echo "Creating project: $TASKS_DEV_PROJECT_NAME with Display Name: $TASKS_DEV_PROJECT_NAME"
 oc new-project ${TASKS_DEV_PROJECT_NAME} --display-name ${TASKS_DEV_PROJECT_NAME}
 
-# Set up Dev Application
-echo "Set up Dev Application"
-oc new-build --binary=true --name="tasks" jboss-eap71-openshift:1.4 -n $TASKS_DEV_PROJECT_NAME
-oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0-0 --name=tasks --allow-missing-imagestream-tags=true --allow-missing-images=true -n $TASKS_DEV_PROJECT_NAME
-oc set triggers dc/tasks --remove-all -n $TASKS_DEV_PROJECT_NAME
-oc expose dc tasks --port 8080 -n $TASKS_DEV_PROJECT_NAME
-oc expose svc tasks -n $TASKS_DEV_PROJECT_NAME
-oc set probe dc/tasks -n $TASKS_DEV_PROJECT_NAME --readiness --failure-threshold 3 --initial-delay-seconds 60 --get-url=http://:8080/
-oc create configmap tasks-config --from-literal="application-users.properties=Placeholder" --from-literal="application-roles.properties=Placeholder" -n $TASKS_DEV_PROJECT_NAME
-oc set volume dc/tasks --add --name=jboss-config --mount-path=/opt/eap/standalone/configuration/application-users.properties --sub-path=application-users.properties --configmap-name=tasks-config -n $TASKS_DEV_PROJECT_NAME
-oc set volume dc/tasks --add --name=jboss-config1 --mount-path=/opt/eap/standalone/configuration/application-roles.properties --sub-path=application-roles.properties --configmap-name=tasks-config -n $TASKS_DEV_PROJECT_NAME
-
 # Create Tasks PROD Project
 echo "Create Tasks PROD Project"
 TASKS_PROD_PROJECT_NAME="$GUID-tasks-prod"
 echo "$TASKS_PROD_PROJECT_NAME"
 echo "Creating project: $TASKS_PROD_PROJECT_NAME with Display Name: $TASKS_PROD_PROJECT_NAME"
 oc new-project ${TASKS_PROD_PROJECT_NAME} --display-name ${TASKS_PROD_PROJECT_NAME}
-
-# Create Blue Application
-echo "Create Blue Application"
-oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0 --name=tasks-blue --allow-missing-imagestream-tags=true --allow-missing-images=true -n $TASKS_PROD_PROJECT_NAME
-oc set triggers dc/tasks-blue --remove-all -n $TASKS_PROD_PROJECT_NAME
-oc expose dc tasks-blue --port 8080 -n $TASKS_PROD_PROJECT_NAME
-oc set probe dc tasks-blue -n $TASKS_PROD_PROJECT_NAME --readiness --failure-threshold 3 --initial-delay-seconds 60 --get-url=http://:8080/
-oc create configmap tasks-blue-config --from-literal="application-users.properties=Placeholder" --from-literal="application-roles.properties=Placeholder" -n $TASKS_PROD_PROJECT_NAME
-oc set volume dc/tasks-blue --add --name=jboss-config --mount-path=/opt/eap/standalone/configuration/application-users.properties --sub-path=application-users.properties --configmap-name=tasks-blue-config -n $TASKS_PROD_PROJECT_NAME
-oc set volume dc/tasks-blue --add --name=jboss-config1 --mount-path=/opt/eap/standalone/configuration/application-roles.properties --sub-path=application-roles.properties --configmap-name=tasks-blue-config -n $TASKS_PROD_PROJECT_NAME
-
-# Create Green Application
-oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0 --name=tasks-green --allow-missing-imagestream-tags=true --allow-missing-images=true -n $TASKS_PROD_PROJECT_NAME
-oc set triggers dc/tasks-green --remove-all -n $TASKS_PROD_PROJECT_NAME
-oc expose dc tasks-green --port 8080 -n $TASKS_PROD_PROJECT_NAME
-oc set probe dc tasks-green -n $TASKS_PROD_PROJECT_NAME --readiness --failure-threshold 3 --initial-delay-seconds 60 --get-url=http://:8080/
-oc create configmap tasks-green-config --from-literal="application-users.properties=Placeholder" --from-literal="application-roles.properties=Placeholder" -n $TASKS_PROD_PROJECT_NAME
-oc set volume dc/tasks-green --add --name=jboss-config --mount-path=/opt/eap/standalone/configuration/application-users.properties --sub-path=application-users.properties --configmap-name=tasks-green-config -n $TASKS_PROD_PROJECT_NAME
-oc set volume dc/tasks-green --add --name=jboss-config1 --mount-path=/opt/eap/standalone/configuration/application-roles.properties --sub-path=application-roles.properties --configmap-name=tasks-green-config -n $TASKS_PROD_PROJECT_NAME
-
-# Expose Blue service as route to make blue application active
-oc expose svc/tasks-blue --name tasks -n $TASKS_PROD_PROJECT_NAME
 
 # Create Jenkins Project
 JENKINS_PROJECT_NAME="$GUID-jenkins"
