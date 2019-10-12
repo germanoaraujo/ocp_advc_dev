@@ -21,7 +21,7 @@ oc new-project ${TASKS_DEV_PROJECT_NAME} --display-name ${TASKS_DEV_PROJECT_NAME
 # Set up Dev Application
 echo "Set up Dev Application"
 oc new-build --binary=true --name="tasks" jboss-eap71-openshift:1.4 -n $TASKS_DEV_PROJECT_NAME
-oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0-0 --name=tasks --allow-missing-imagestream-tags=true -n $TASKS_DEV_PROJECT_NAME
+oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0-0 --name=tasks --allow-missing-imagestream-tags=true --allow-missing-images=true -n $TASKS_DEV_PROJECT_NAME
 oc set triggers dc/tasks --remove-all -n $TASKS_DEV_PROJECT_NAME
 oc expose dc tasks --port 8080 -n $TASKS_DEV_PROJECT_NAME
 oc expose svc tasks -n $TASKS_DEV_PROJECT_NAME
@@ -39,7 +39,7 @@ oc new-project ${TASKS_PROD_PROJECT_NAME} --display-name ${TASKS_PROD_PROJECT_NA
 
 # Create Blue Application
 echo "Create Blue Application"
-oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0 --name=tasks-blue --allow-missing-imagestream-tags=true -n $TASKS_PROD_PROJECT_NAME
+oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0 --name=tasks-blue --allow-missing-imagestream-tags=true --allow-missing-images=true -n $TASKS_PROD_PROJECT_NAME
 oc set triggers dc/tasks-blue --remove-all -n $TASKS_PROD_PROJECT_NAME
 oc expose dc tasks-blue --port 8080 -n $TASKS_PROD_PROJECT_NAME
 oc set probe dc tasks-blue -n $TASKS_PROD_PROJECT_NAME --readiness --failure-threshold 3 --initial-delay-seconds 60 --get-url=http://:8080/
@@ -48,7 +48,7 @@ oc set volume dc/tasks-blue --add --name=jboss-config --mount-path=/opt/eap/stan
 oc set volume dc/tasks-blue --add --name=jboss-config1 --mount-path=/opt/eap/standalone/configuration/application-roles.properties --sub-path=application-roles.properties --configmap-name=tasks-blue-config -n $TASKS_PROD_PROJECT_NAME
 
 # Create Green Application
-oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0 --name=tasks-green --allow-missing-imagestream-tags=true -n $TASKS_PROD_PROJECT_NAME
+oc new-app $TASKS_DEV_PROJECT_NAME/tasks:0.0 --name=tasks-green --allow-missing-imagestream-tags=true --allow-missing-images=true -n $TASKS_PROD_PROJECT_NAME
 oc set triggers dc/tasks-green --remove-all -n $TASKS_PROD_PROJECT_NAME
 oc expose dc tasks-green --port 8080 -n $TASKS_PROD_PROJECT_NAME
 oc set probe dc tasks-green -n $TASKS_PROD_PROJECT_NAME --readiness --failure-threshold 3 --initial-delay-seconds 60 --get-url=http://:8080/
