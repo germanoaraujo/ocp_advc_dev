@@ -12,26 +12,9 @@ REPO=$2
 CLUSTER=$3
 echo "Setting up Jenkins in project ${GUID}-jenkins from Git Repo ${REPO} for Cluster ${CLUSTER}"
 
-# Create Tasks Dev Project
 TASKS_DEV_PROJECT_NAME="$GUID-tasks-dev"
-echo "$TASKS_DEV_PROJECT_NAME"
-echo "Creating project: $TASKS_DEV_PROJECT_NAME with Display Name: $TASKS_DEV_PROJECT_NAME"
-oc new-project ${TASKS_DEV_PROJECT_NAME} --display-name ${TASKS_DEV_PROJECT_NAME}
-
-# Create Tasks PROD Project
-echo "Create Tasks PROD Project"
 TASKS_PROD_PROJECT_NAME="$GUID-tasks-prod"
-echo "$TASKS_PROD_PROJECT_NAME"
-echo "Creating project: $TASKS_PROD_PROJECT_NAME with Display Name: $TASKS_PROD_PROJECT_NAME"
-oc new-project ${TASKS_PROD_PROJECT_NAME} --display-name ${TASKS_PROD_PROJECT_NAME}
-
-# Create Jenkins Project
 JENKINS_PROJECT_NAME="$GUID-jenkins"
-echo "$JENKINS_PROJECT_NAME"
-JENKINS_DISPLAY_NAME="$GUID-Persistent-Jenkins"
-echo "$JENKINS_DISPLAY_NAME"
-echo "Creating project: $JENKINS_PROJECT_NAME with Display Name: $JENKINS_DISPLAY_NAME"
-oc new-project ${JENKINS_PROJECT_NAME} --display-name ${JENKINS_DISPLAY_NAME}
 
 # Deploy Persistent Jenkins
 echo "** Deploy Jenkins App **"
