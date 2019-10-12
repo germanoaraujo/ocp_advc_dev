@@ -12,7 +12,7 @@ podTemplate(
       resourceLimitCpu: "2"
     )
   ]
-) {
+) pipeline {
   def prefix      = "7115"
   def mvnCmd      = "mvn -s ../nexus_settings.xml"
   def devProject  = "${prefix}-tasks-dev"
@@ -146,11 +146,10 @@ podTemplate(
       }
     }
 
-      stage('Switch over to new Version') {
-        echo "Switching Production application to ${destApp}."
-        // TBD: Execute switch
-      }
-      
+    stage('Switch over to new Version') {
+      echo "Switching Production application to ${destApp}."
+    }
+
     }
   }
 }
