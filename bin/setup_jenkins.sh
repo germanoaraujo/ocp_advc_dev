@@ -35,12 +35,12 @@ oc new-project ${JENKINS_PROJECT_NAME} --display-name ${JENKINS_DISPLAY_NAME}
 
 # Deploy Persistent Jenkins
 echo "** Deploy Jenkins App **"
-oc new-app jenkins-persistent --param ENABLE_OAUTH=true --param MEMORY_LIMIT=2Gi --param VOLUME_CAPACITY=4Gi --param DISABLE_ADMINISTRATIVE_MONITORS=true
+oc new-app jenkins-persistent --param ENABLE_OAUTH=true --param MEMORY_LIMIT=2Gi --param VOLUME_CAPACITY=4Gi --param DISABLE_ADMINISTRATIVE_MONITORS=true -n $JENKINS_PROJECT_NAME
 
 # Adjust Jenkins Resource Resource
 echo "** Adjust Jenkins Resource Resource **"
-oc set resources dc jenkins --limits=memory=2Gi,cpu=2 --requests=memory=1Gi,cpu=500m
-oc label dc jenkins app=jenkins --overwrite
+oc set resources dc jenkins --limits=memory=2Gi,cpu=2 --requests=memory=1Gi,cpu=500m -n $JENKINS_PROJECT_NAME
+oc label dc jenkins app=jenkins --overwrite -n $JENKINS_PROJECT_NAME
 
 # Configure Jenkins Service Accounts
 echo "** Configure Jenkins Service Accounts **"
