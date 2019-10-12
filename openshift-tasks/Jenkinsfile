@@ -73,25 +73,23 @@ podTemplate(
 
       // Deploy the built image to the Development Environment.
       stage('Deploy to Dev') {
-        steps {
-          echo "Deploy to Dev"
-          script {
-            openshift.withCluster() {
-              openshift.withProject("${devProject}") {
-                openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
-                openshift.selector('configmap', 'tasks-config').delete()
-                def configmap = openshift.create('configmap', 'tasks-config', '--from-file=./configuration/application-users.properties', '--from-file=./configuration/application-roles.properties')
-                openshift.selector("dc", "tasks").rollout().latest();
+        echo "Deploy to Dev"
+        script {
+          openshift.withCluster() {
+            openshift.withProject("${devProject}") {
+              openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
+              openshift.selector('configmap', 'tasks-config').delete()
+              def configmap = openshift.create('configmap', 'tasks-config', '--from-file=./configuration/application-users.properties', '--from-file=./configuration/application-roles.properties')
+              openshift.selector("dc", "tasks").rollout().latest();
 
-                def dc = openshift.selector("dc", "tasks").object()
-                def dc_version = dc.status.latestVersion
-                def rc = openshift.selector("rc", "tasks-${dc_version}").object()
+              def dc = openshift.selector("dc", "tasks").object()
+              def dc_version = dc.status.latestVersion
+              def rc = openshift.selector("rc", "tasks-${dc_version}").object()
 
-                echo "Waiting for ReplicationController tasks-${dc_version} to be ready"
-                while (rc.spec.replicas != rc.status.readyReplicas) {
-                  sleep 5
-                  rc = openshift.selector("rc", "tasks-${dc_version}").object()
-                }
+              echo "Waiting for ReplicationController tasks-${dc_version} to be ready"
+              while (rc.spec.replicas != rc.status.readyReplicas) {
+                sleep 5
+                rc = openshift.selector("rc", "tasks-${dc_version}").object()
               }
             }
           }
@@ -100,21 +98,18 @@ podTemplate(
 
       // Copy Image to Nexus container registry
       stage('Copy Image to Nexus container registry') {
-        steps {
-          echo "Copy image to Nexus container registry"
-          script {
-            sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/${devProject}/tasks:${devTag} docker://nexus3-registry.${prefix}-nexus.svc.cluster.local:5000/tasks:${devTag}"
-            openshift.withCluster() {
-              openshift.withProject("${prodProject}") {
-                openshift.tag("${devProject}/tasks:${devTag}", "${devProject}/tasks:${prodTag}")
-              }
+        echo "Copy image to Nexus container registry"
+        script {
+          sh "skopeo copy --src-tls-verify=false --dest-tls-verify=false --src-creds openshift:\$(oc whoami -t) --dest-creds admin:admin123 docker://docker-registry.default.svc.cluster.local:5000/${devProject}/tasks:${devTag} docker://nexus3-registry.${prefix}-nexus.svc.cluster.local:5000/tasks:${devTag}"
+          openshift.withCluster() {
+            openshift.withProject("${prodProject}") {
+              openshift.tag("${devProject}/tasks:${devTag}", "${devProject}/tasks:${prodTag}")
             }
           }
         }
       }
 
       stage('Blue/Green Production Deployment') {
-        steps {
         echo "Blue/Green Deployment"
         script {
           openshift.withCluster() {
@@ -144,7 +139,6 @@ podTemplate(
             }
           }
         }
-      }
     }
 
     stage('Switch over to new Version') {
