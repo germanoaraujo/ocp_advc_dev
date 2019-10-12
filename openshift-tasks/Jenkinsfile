@@ -76,7 +76,7 @@ podTemplate(
           openshift.withCluster() {
             openshift.withProject("${devProject}") {
               openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
-              sh "oc set env dc/tasks VERSION=${devTag} (tasks-dev)"
+              sh "oc set env dc/tasks VERSION='${devTag} (tasks-dev)'"
               openshift.selector('configmap', 'tasks-config').delete()
               def configmap = openshift.create('configmap', 'tasks-config', '--from-file=./configuration/application-users.properties', '--from-file=./configuration/application-roles.properties')
               openshift.selector("dc", "tasks").rollout().latest();
