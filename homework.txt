@@ -1,5 +1,18 @@
 # Homework Assignment
 
-- Git Repo: https://github.com/vinicius-martinez/ocp_advc_dev.git
-- Build Number: 551
-- Build Link: https://jenkins-gpte-jenkins.apps.na311.openshift.opentlc.com/job/OpenShift%20Advanced%20Application%20Deployment%20Homework%20Grading/551/
+- Provision:
+* ./setup_projects.sh 7115 vmartine-redhat.com true
+* ./setup_dev.sh 7115
+* ./setup_prod.sh 7115
+* ./setup_jenkins.sh 7115 https://github.com/vinicius-martinez/ocp_advc_dev.git na311.openshift.opentlc.com
+
+** ./setup_projects.sh 7115 vmartine-redhat.com true; ./setup_dev.sh 7115; ./setup_prod.sh 7115; ./setup_jenkins.sh 7115 https://github.com/vinicius-martinez/ocp_advc_dev.git na311.openshift.opentlc.com
+
+- Git Repo:
+* https://github.com/vinicius-martinez/ocp_advc_dev.git
+
+- Build Number:
+* 552
+
+- Build Link:
+* https://jenkins-gpte-jenkins.apps.na311.openshift.opentlc.com/job/OpenShift%20Advanced%20Application%20Deployment%20Homework%20Grading/552/
