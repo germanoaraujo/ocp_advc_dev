@@ -60,6 +60,8 @@ podTemplate(
       stage('Build and Tag OpenShift Image') {
         echo "Building OpenShift container image tasks:${devTag}"
         sh "cp target/openshift-tasks.war target/ROOT.war"
+        sh "oc set env dc/tasks-blue VERSION='${prodTag} (tasks-blue)' -n ${prodProject}"
+        sh "oc set env dc/tasks-green VERSION='${prodTag} (tasks-green)' -n ${prodProject}"
         script {
           openshift.withCluster() {
             openshift.withProject("${devProject}") {
@@ -111,8 +113,6 @@ podTemplate(
 
       stage('Blue/Green Production Deployment') {
         echo "Blue/Green Deployment"
-        sh "oc set env dc/tasks-blue VERSION='${prodTag} (tasks-blue)' -n ${prodProject}"
-        sh "oc set env dc/tasks-green VERSION='${prodTag} (tasks-green)' -n ${prodProject}"
         script {
           openshift.withCluster() {
             openshift.withProject("${prodProject}") {
