@@ -111,6 +111,8 @@ podTemplate(
 
       stage('Blue/Green Production Deployment') {
         echo "Blue/Green Deployment"
+        sh "oc set env dc/tasks-blue VERSION='${prodTag} (tasks-blue)' -n ${prodProject}"
+        sh "oc set env dc/tasks-green VERSION='${prodTag} (tasks-green)' -n ${prodProject}"
         script {
           openshift.withCluster() {
             openshift.withProject("${prodProject}") {
