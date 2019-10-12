@@ -54,8 +54,9 @@ oc policy add-role-to-user edit system:serviceaccount:$JENKINS_PROJECT_NAME:jenk
 echo "** Creating Pipeline Build Config **"
 PIPELINE_STRATEGY="pipeline"
 PIPELINE_CONTEXT_PATH="openshift-tasks"
-echo "Creating Pipeline with repo ${REPO} strategy ${PIPELINE_STRATEGY} and context-dir ${PIPELINE_CONTEXT_PATH}"
-oc new-build ${REPO} --strategy=${PIPELINE_STRATEGY} --context-dir=${PIPELINE_CONTEXT_PATH}
+PIPELINE_NAME="tasks-pipeline"
+echo "Creating Pipeline with repo ${REPO} strategy ${PIPELINE_STRATEGY} and context-dir ${PIPELINE_CONTEXT_PATH} with name ${PIPELINE_NAME}"
+oc new-build ${REPO} --strategy=${PIPELINE_STRATEGY} --context-dir=${PIPELINE_CONTEXT_PATH} --name=${PIPELINE_NAME}
 
 # Create custom agent container image with skopeo
 echo "** Creating Skopeo Jenkins Agent **"
