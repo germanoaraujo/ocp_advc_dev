@@ -1,0 +1,5 @@
+# Homework Assignment
+
+- Git Repo: https://github.com/vinicius-martinez/ocp_advc_dev.git
+- Build Number: 551
+- Build Link: https://jenkins-gpte-jenkins.apps.na311.openshift.opentlc.com/job/OpenShift%20Advanced%20Application%20Deployment%20Homework%20Grading/551/
