@@ -56,7 +56,7 @@ PIPELINE_STRATEGY="pipeline"
 PIPELINE_CONTEXT_PATH="openshift-tasks"
 PIPELINE_NAME="tasks-pipeline"
 echo "Creating Pipeline with repo ${REPO} strategy ${PIPELINE_STRATEGY} and context-dir ${PIPELINE_CONTEXT_PATH} with name ${PIPELINE_NAME} on $JENKINS_PROJECT_NAME"
-oc new-build ${REPO} --strategy=${PIPELINE_STRATEGY} --context-dir=${PIPELINE_CONTEXT_PATH} --name=${PIPELINE_NAME}
+oc new-build ${REPO} --strategy=${PIPELINE_STRATEGY} --context-dir=${PIPELINE_CONTEXT_PATH} --name=${PIPELINE_NAME} -n $JENKINS_PROJECT_NAME
 
 # Create custom agent container image with skopeo
 echo "** Creating Skopeo Jenkins Agent **"
