@@ -59,10 +59,12 @@ podTemplate(
 
       stage('Build and Tag OpenShift Image') {
         echo "Building OpenShift container image tasks:${devTag}"
+        sh "cp target/openshift-tasks.war target/ROOT.war"
         script {
           openshift.withCluster() {
             openshift.withProject("${devProject}") {
-              openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+              openshift.selector("bc", "tasks").startBuild("--from-file=target/ROOT.war", "--wait=true")
+              //openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
               //openshift.selector("bc", "tasks").startBuild("--from-file=http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/releases/org/jboss/quickstarts/eap/tasks/${version}/tasks-${version}.war", "--wait=true")
               openshift.tag("tasks:latest", "tasks:${devTag}")
             }
