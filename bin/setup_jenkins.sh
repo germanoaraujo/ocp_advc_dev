@@ -30,7 +30,6 @@ JENKINS_DISPLAY_NAME="$GUID-Persistent-Jenkins"
 echo "$JENKINS_DISPLAY_NAME"
 echo "Creating project: $JENKINS_PROJECT_NAME with Display Name: $JENKINS_DISPLAY_NAME"
 oc new-project ${JENKINS_PROJECT_NAME} --display-name ${JENKINS_DISPLAY_NAME}
-oc policy add-role-to-user edit system:serviceaccount:$JENKINS_PROJECT_NAME:jenkins -n $JENKINS_PROJECT_NAME
 
 # Deploy Persistent Jenkins
 echo "** Deploy Jenkins App **"
@@ -46,19 +45,18 @@ echo "** Configure Jenkins Service Accounts **"
 oc policy add-role-to-group edit system:serviceaccounts:$JENKINS_PROJECT_NAME -n $TASKS_DEV_PROJECT_NAME
 oc policy add-role-to-group edit system:serviceaccounts:$JENKINS_PROJECT_NAME -n $TASKS_PROD_PROJECT_NAME
 
-# Create custom agent container image with skopeo
-echo "** Creating Skopeo Jenkins Agent **"
-oc new-build -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
-      USER root\nRUN yum -y install skopeo && yum clean all\n
-      USER 1001' --name=jenkins-agent-appdev -n ${JENKINS_PROJECT_NAME}
-
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
 echo "** Creating Pipeline Build Config **"
 PIPELINE_STRATEGY="pipeline"
 PIPELINE_CONTEXT_PATH="openshift-tasks"
 echo "Creating Pipeline with repo ${REPO} strategy ${PIPELINE_STRATEGY} and context-dir ${PIPELINE_CONTEXT_PATH}"
 oc new-build ${REPO} --strategy=${PIPELINE_STRATEGY} --context-dir=${PIPELINE_CONTEXT_PATH}
-# TBD
+
+# Create custom agent container image with skopeo
+echo "** Creating Skopeo Jenkins Agent **"
+oc new-build -D $'FROM docker.io/openshift/jenkins-agent-maven-35-centos7:v3.11\n
+      USER root\nRUN yum -y install skopeo && yum clean all\n
+      USER 1001' --name=jenkins-agent-appdev -n $JENKINS_PROJECT_NAME
 
 # Make sure that Jenkins is fully up and running before proceeding!
 while : ; do
