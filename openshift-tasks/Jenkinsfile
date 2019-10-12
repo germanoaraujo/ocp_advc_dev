@@ -47,17 +47,16 @@ podTemplate(
         echo "Running Unit Tests"
         sh "${mvnCmd} test"
       }
+
       stage('Code Analysis') {
         echo "Running Code Analysis"
         sh "${mvnCmd} sonar:sonar -Dsonar.host.url=http://sonarqube.gpte-hw-cicd.svc.cluster.local:9000 -DskipTests"
       }
 
-      // Publish the built war file to Nexus
       stage('Publish to Nexus') {
         sh "${mvnCmd} deploy -DskipTests=true -DaltDeploymentRepository=nexus::default::http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/releases"
       }
 
-      // Build the OpenShift Image in OpenShift and tag it.
       stage('Build and Tag OpenShift Image') {
         echo "Building OpenShift container image tasks:${devTag}"
         script {
@@ -71,7 +70,6 @@ podTemplate(
         }
       }
 
-      // Deploy the built image to the Development Environment.
       stage('Deploy to Dev') {
         echo "Deploy to Dev"
         script {
@@ -96,7 +94,6 @@ podTemplate(
         }
       }
 
-      // Copy Image to Nexus container registry
       stage('Copy Image to Nexus container registry') {
         echo "Copy image to Nexus container registry"
         script {
