@@ -16,6 +16,7 @@ podTemplate(
 ) {
   def prefix      = "7115"
   def mvnCmd      = "mvn -s ../nexus_settings.xml"
+  def version     = ""
   def devProject  = "${prefix}-tasks-dev"
   def prodProject = "${prefix}-tasks-prod"
   def devTag      = "0.0-0"
@@ -30,7 +31,7 @@ podTemplate(
     }
 
     dir('openshift-tasks') {
-      def version = getVersionFromPom("pom.xml")
+      version = getVersionFromPom("pom.xml")
       echo "Building version ${version}"
       devTag  = "${version}-" + currentBuild.number
       echo "Building devTag ${devTag}"
@@ -62,7 +63,8 @@ podTemplate(
         script {
           openshift.withCluster() {
             openshift.withProject("${devProject}") {
-              openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+              //openshift.selector("bc", "tasks").startBuild("--from-file=./target/openshift-tasks.war", "--wait=true")
+              openshift.selector("bc", "tasks").startBuild("--from-file=http://nexus3-gpte-hw-cicd.apps.na311.openshift.opentlc.com/repository/releases/org/jboss/quickstarts/eap/tasks/${version}/tasks-${version}.war", "--wait=true")
               openshift.tag("tasks:latest", "tasks:${devTag}")
             }
           }
