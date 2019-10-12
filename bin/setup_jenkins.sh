@@ -49,6 +49,9 @@ oc policy add-role-to-group edit system:serviceaccounts:$JENKINS_PROJECT_NAME -n
 oc policy add-role-to-group system:image-puller system:serviceaccounts:$TASKS_PROD_PROJECT_NAME -n $TASKS_DEV_PROJECT_NAME
 oc policy add-role-to-user edit system:serviceaccount:$JENKINS_PROJECT_NAME:jenkins -n $TASKS_DEV_PROJECT_NAME
 oc policy add-role-to-user edit system:serviceaccount:$JENKINS_PROJECT_NAME:jenkins -n $TASKS_PROD_PROJECT_NAME
+oc policy add-role-to-user edit system:serviceaccount:gpte-jenkins:jenkins -n $JENKINS_PROJECT_NAME
+oc policy add-role-to-user edit system:serviceaccount:gpte-jenkins:jenkins -n $TASKS_DEV_PROJECT_NAME
+oc policy add-role-to-user edit system:serviceaccount:gpte-jenkins:jenkins -n $TASKS_PROD_PROJECT_NAME
 
 # Create pipeline build config pointing to the ${REPO} with contextDir `openshift-tasks`
 echo "** Creating Pipeline Build Config **"
