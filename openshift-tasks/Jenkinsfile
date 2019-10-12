@@ -76,6 +76,7 @@ podTemplate(
           openshift.withCluster() {
             openshift.withProject("${devProject}") {
               openshift.set("image", "dc/tasks", "tasks=docker-registry.default.svc:5000/${devProject}/tasks:${devTag}")
+              openshift.set("env", "dc/tasks", "VERSION=${devTag} (tasks-dev)")
               openshift.selector('configmap', 'tasks-config').delete()
               def configmap = openshift.create('configmap', 'tasks-config', '--from-file=./configuration/application-users.properties', '--from-file=./configuration/application-roles.properties')
               openshift.selector("dc", "tasks").rollout().latest();
@@ -128,6 +129,7 @@ podTemplate(
               def dc_prod = openshift.selector("dc", "${destApp}").object()
               def dc_version = dc_prod.status.latestVersion
               def rc_prod = openshift.selector("rc", "${destApp}-${dc_version}").object()
+              
               echo "Waiting for ${destApp} to be ready"
               while (rc_prod.spec.replicas != rc_prod.status.readyReplicas) {
                 sleep 5
